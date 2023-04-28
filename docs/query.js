@@ -11,11 +11,17 @@ function showEntriesForItemName(name) {
     const storeAddress = store.address.street_address
     for (const entry of storeEntry.items) {
       if (!entry.name.startsWith(name)) continue
-      html += `
-      <div class='card' style='width:250px;height: 200px;border-radius:20px;'>
+      try {
+        var imgUrl = entry.media_image.base_url + entry.media_image.public_id + '.' + entry.media_image.format
+      } catch {
+        var imgUrl = 'https://img.cdn4dd.com/p/fit=cover,width=150,height=150,format=auto,quality=50/media/photosV2/c9c51089-97b3-49d2-9fb1-707b3ad9562f-retina-large.jpg'
+      }
+      let clickUrl = `https://www.grubhub.com/restaurant/mcdonalds-5765-broadway-bronx/${storeEntry.storeId}/menu-item/${entry.id}?menu-item-options=`;
+       html += `
+      <div class='card' onclick="openURL('${clickUrl}')" style='width:250px;height: 200px;border-radius:20px;'>
       <div class='image' style='
       position: absolute;
-      background-image: url(https://img.cdn4dd.com/p/fit=cover,width=150,height=150,format=auto,quality=50/media/photosV2/c9c51089-97b3-49d2-9fb1-707b3ad9562f-retina-large.jpg);
+      background-image: url(${imgUrl});
         width: 250px;
         height: 200px;
         border-radius:20px;
@@ -44,6 +50,10 @@ setTimeout(() => {
   // showEntriesForItemName('Plain Sundae')
 }, 4000)
 
+
+function openURL (url) {
+  window.open(url, '_blank').focus();
+}
 
 function priceToString(price) {
   return '$' + (price / 100)
