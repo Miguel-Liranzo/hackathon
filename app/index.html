@@ -73,6 +73,10 @@
       filter: invert();
       cursor: pointer;
     }
+
+    .reload {
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -80,6 +84,7 @@
   <canvas class="canvas-holder"></canvas>
   <div class="container">
     <div class="hp">
+      <div class='reload' style='position:fixed; left:2%;top:2%;' onclick="location.reload()">🔄</div>
       <div class="main">In Stock?</div>
       <div class="searchbar">
         <input id="query" class='input' type="text" oninput="onMainInput(event)" />
@@ -90,55 +95,56 @@
         </div> -->
       </div>
 
-      <div style="margin-top:2%;">
+      <div id="thing" style="margin-top:2%;">
         <style>
+          .cards {
+            display: flex;
+            /* width: inherit; */
+            flex-flow: row wrap;
+            justify-content: center;
+            align-items: center;
+            overflow: scroll;
+            margin-top: 200px;
+          }
+
           .card {
             text-align: center;
             line-height: 1.0;
+
+            width: 250px;
+            height: 200px;
+            border-radius: 20px;
+            margin: 10px;
           }
+
           .item {
             /* filter: brightness(1); */
             color: white;
           }
+
           .card:hover {
             filter: brightness(0.5);
             cursor: pointer;
           }
+
           a {
             color: gold;
             text-decoration: none;
           }
+
           a:hover {
             color: pink;
           }
         </style>
-        <div class='card' style='width:250px;height: 200px;border-radius:20px;'>
-          <div class='image' style='
-          position: absolute;
-          background-image: url(https://img.cdn4dd.com/p/fit=cover,width=150,height=150,format=auto,quality=50/media/photosV2/c9c51089-97b3-49d2-9fb1-707b3ad9562f-retina-large.jpg);
-            width: 250px;
-            height: 200px;
-            border-radius:20px;
-            z-index:-1;
-            filter:brightness(0.40);
-          '></div>
-          <div style='padding:3%'>
-            <div class='item'>
-              <h3>Vanilla Cone</h3>
-              <h4>$3.99</h4>
-            </div>
-            <hr />
-            <div class='item'>
-              <h3><a href="https://mcdonalds.com/">123 Water St.</a></h3>
-              <h4>McDonald's Tribeca</h4>
-            </div>
-          </div>
+        <div class="cards">
+
         </div>
       </div>
     </div>
   </div>
   <script src="spin.js?5"></script>
-  <script src="suggestion.js?4"></script>
+  <script src="suggestion.js?9"></script>
+  <script src="query.js?8"></script>
 </body>
 
 </html>
