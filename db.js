@@ -2,30 +2,21 @@ const Pool = require("pg").Pool;
 const pool = Pool( {
     user: 'me',
     host: 'localhost',
-    database: 'favlinks',
+    database: 'mcbroken',
     password: 'me',
     port: 5432
 });
 
-const getResults = (req, res) => {
-    pool.query('SELECT * FROM locations WHERE broken = FALSE')
-}
-const getLinkByID = (req, res) => {
-    pool.query('SELECT ')
-}
-
-const postLink = (req, res) => {
-    pool.query('INSERT INTO links ')
-}
-
-const putLink = (req, res) => {
-    pool.query('SET ... WHERE id')
-}
-
-const deleteLink = (req, res) => {
-    pool.query('')
-}
+const getResults = (req, res => {
+    const item = req.body.name
+    try {
+        pool.query('SELECT * FROM store WHERE (SELECT * FROM inventory WHERE item_name = $1)', [item])
+        response.status(200).json(res.rows)
+    } catch (error) {
+        console.error(error.message)
+    }
+});
 
 module.exports = {
-    
+    getResults
 }
