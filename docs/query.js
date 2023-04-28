@@ -31,7 +31,7 @@ function showEntriesForItemName(name) {
       <div style='padding:3%'>
         <div class='item'>
           <h3>${entry.name}</h3>
-          <h4>${priceToString(entry.price.amount)}</h4>
+          <h3>${priceToString(entry.price.amount)}</h3>
         </div>
         <hr />
         <div class='item'>
