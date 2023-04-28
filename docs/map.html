@@ -1,0 +1,102 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css" integrity="sha512-mD70nAW2ThLsWH0zif8JPbfraZ8hbCtjQ+5RU1m4+ztZq6/MymyZeB55pWsi4YAX+73yvcaJyk61mzfYMvtm9w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
+
+<style>
+    html,
+    body,
+    .full,
+    #map {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+</style>
+<div class="row full">
+    <div class="col col-sm-3 full" style="overflow: auto;">
+        <h3>Locations</h3>
+        <p>Buffer size : <input id="range" type="number" value='0' min='0' step="10" width="50px" /></p>
+        <!-- <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                </tr>
+            </thead>
+            <tbody id="t_points"></tbody>
+        </table> -->
+    </div>
+    <div id="map" class="col col-sm-9 full"></div>
+</div>
+
+<script>
+    var map = L.map('map').setView([40.8706304, -73.8958747], 16);
+    var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    function addRowTable(code, coords) {
+        return
+        var tr = document.createElement("tr");
+        var td = document.createElement("td");
+        td.textContent = code;
+        tr.appendChild(td);
+        tr.onclick = function () { map.flyTo(coords, 17); };
+        document.getElementById("t_points").appendChild(tr);
+    }
+    var buffers = [];
+    function addMarker(code, lat, lng) {
+        var p = L.marker([lat, lng]);
+        p.title = code;
+        p.alt = code;
+        p.bindPopup(code);
+        p.addTo(map);
+        // addRowTable(code, [lat, lng]);
+        var c = L.circle([lat, lng], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 0
+        }).addTo(map);
+        buffers.push(c);
+    }
+
+    // $(document).ready(function () {
+    //     var points = [["M02KM262", 46.76336, -71.32453],
+    //     ["M10KM052", 46.76186, -71.32247],
+    //     ["83KM081", 46.76489, -71.32664],
+    //     ["83KM082", 46.76672, -71.32919]];
+    //     for (var i = 0; i < points.length; i++) {
+    //         addMarker(points[i][0], points[i][1], points[i][2]);
+    //     }
+    // });
+
+    function addMarkers(points) {
+        for (var i = 0; i < points.length; i++) {
+            addMarker(points[i].name, points[i].lat, points[i].lng);
+        }
+    }
+
+    window.addEventListener("message", (event) => {
+        console.log('GOT MESSAGE', event.data)
+        if (event.data && event.data.type == "showPoints") {
+            addMarkers(event.data.data)
+        }
+    });
+
+    L.control.scale({ maxWidth: 240, metric: true, position: 'bottomleft' }).addTo(map);
+
+    L.control.polylineMeasure({ position: 'topleft', imperial: false, clearMeasurementsOnStop: false, showMeasurementsClearControl: true }).addTo(map);
+
+
+    $("#range").change(function (e) {
+        var radius = parseInt($(this).val())
+        buffers.forEach(function (e) {
+            e.setRadius(radius);
+            e.addTo(map);
+        });
+    });
+
+</script>
+

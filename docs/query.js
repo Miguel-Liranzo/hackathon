@@ -3,6 +3,8 @@ var invData, storeData
 fetch('invs.json').then(d => d.json()).then(d => { invData = d; console.log('Inv data', invData) })
 fetch('stores.json').then(d => d.json()).then(d => { storeData = d })
 
+let locations = []
+
 function showEntriesForItemName(name) {
   let html = ''
   for (const storeEntry of invData) {
@@ -41,6 +43,7 @@ function showEntriesForItemName(name) {
       </div>
     </div>    
   `
+      locations.push({ lat: store.address.latitude, lng: store.address.longitude, name: storeAddress })
     }
   }
   document.querySelector('.cards').innerHTML = html
@@ -57,4 +60,14 @@ function openURL (url) {
 
 function priceToString(price) {
   return '$' + (price / 100)
+}
+
+function showMap () {
+  document.querySelector('.cards').innerHTML = `
+    <iframe id="frame" src="map.html?6" style="width:80vw;height:80vh;" />
+  `
+  setTimeout(() => {
+    const frame = document.querySelector('#frame')
+    frame.contentWindow.postMessage({ type: 'showPoints', 'data': locations })
+  }, 500)
 }

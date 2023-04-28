@@ -24,5 +24,3 @@ function onMainInput (event) {
   console.log('Event', t)
   addSuggestions(possible, t.toLowerCase());
 }
-
-
