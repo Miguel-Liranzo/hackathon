@@ -27,14 +27,17 @@
   }).addTo(map);
 
   var buffers = [];
-  function addMarker(code, lat, lng) {
+  function addMarker(code, lat, lng, broken) {
+    const title = code + (broken ? " (broken)" : "");
     var p = L.marker([lat, lng]);
-    p.title = code;
-    p.alt = code;
+    p.title = title;
+    p.alt = title;
     p.bindPopup(code);
     p.addTo(map);
+    // https://stackoverflow.com/questions/23567203/leaflet-changing-marker-color#comment131844224_61982880
+    if (broken) p._icon.style.filter = "hue-rotate(120deg)";
     var c = L.circle([lat, lng], {
-      color: 'red',
+      color: broken ? 'red' : 'green',
       fillColor: '#f03',
       fillOpacity: 0.5,
       radius: 0
@@ -46,7 +49,8 @@
   function addMarkers(points) {
     const markers = [];
     for (var i = 0; i < points.length; i++) {
-      markers.push(addMarker(points[i].name, points[i].lat, points[i].lng));
+      const { name, lat, lng, working } = points[i];
+      markers.push(addMarker(name, lat, lng, !working));
     }
     const group = new L.featureGroup(markers);
     map.fitBounds(group.getBounds());

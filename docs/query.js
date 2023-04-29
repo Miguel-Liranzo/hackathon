@@ -1,11 +1,11 @@
-var invData, storeData
+let invData, storeData
 
 fetch('invs.json').then(d => d.json()).then(d => { invData = d; console.log('Inv data', invData) })
 fetch('stores.json').then(d => d.json()).then(d => { storeData = d })
 
-let locations = []
+const locations = []
 
-function showEntriesForItemName(name) {
+function showEntriesForItemName (name) {
   let html = ''
   const results = {}
 
@@ -20,10 +20,18 @@ function showEntriesForItemName(name) {
       } catch {
         var imgUrl = 'https://img.cdn4dd.com/p/fit=cover,width=150,height=150,format=auto,quality=50/media/photosV2/c9c51089-97b3-49d2-9fb1-707b3ad9562f-retina-large.jpg'
       }
-      let clickUrl = `https://www.grubhub.com/restaurant/mcdonalds-5765-broadway-bronx/${storeEntry.storeId}/menu-item/${entry.id}?menu-item-options=`;
-      locations.push({ lat: store.address.latitude, lng: store.address.longitude, name: storeAddress })
+      const clickUrl = `https://www.grubhub.com/restaurant/mcdonalds-5765-broadway-bronx/${storeEntry.storeId}/menu-item/${entry.id}?menu-item-options=`
+      locations.push({ id: storeEntry.storeId, lat: store.address.latitude, lng: store.address.longitude, name: storeAddress, working: true })
       results[storeEntry.storeId + entry.name] ??= []
       results[storeEntry.storeId + entry.name].push({ imgUrl, entry, store, storeAddress, clickUrl })
+    }
+  }
+
+  for (const storeId in storeData) {
+    if (!locations.some(l => l.id === storeId)) {
+      const store = storeData[storeId]
+      locations.push({ id: storeId, lat: store.address.latitude, lng: store.address.longitude, name: store.address.street_address, working: false })
+      // console.log('Broken store', store)
     }
   }
 
@@ -65,22 +73,21 @@ setTimeout(() => {
   // showEntriesForItemName('Plain Sundae')
 }, 4000)
 
-
-function openURL(url) {
-  window.open(url, '_blank').focus();
+function openURL (url) {
+  window.open(url, '_blank').focus()
 }
 
-function priceToString(price) {
+function priceToString (price) {
   return '$' + (price / 100)
 }
 
-function showMap() {
+function showMap () {
   if (!locations.length) return alert('Please search for an item first')
   document.querySelector('.cards').innerHTML = `
     <iframe id="frame" src="map.html?6" style="width:80vw;height:80vh;" />
   `
   setTimeout(() => {
     const frame = document.querySelector('#frame')
-    frame.contentWindow.postMessage({ type: 'showPoints', 'data': locations })
+    frame.contentWindow.postMessage({ type: 'showPoints', data: locations })
   }, 500)
 }
