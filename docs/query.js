@@ -7,6 +7,8 @@ let locations = []
 
 function showEntriesForItemName(name) {
   let html = ''
+  const results = {}
+
   for (const storeEntry of invData) {
     console.log('E', storeEntry, storeData)
     const store = storeData[storeEntry.storeId]
@@ -19,7 +21,19 @@ function showEntriesForItemName(name) {
         var imgUrl = 'https://img.cdn4dd.com/p/fit=cover,width=150,height=150,format=auto,quality=50/media/photosV2/c9c51089-97b3-49d2-9fb1-707b3ad9562f-retina-large.jpg'
       }
       let clickUrl = `https://www.grubhub.com/restaurant/mcdonalds-5765-broadway-bronx/${storeEntry.storeId}/menu-item/${entry.id}?menu-item-options=`;
-       html += `
+      locations.push({ lat: store.address.latitude, lng: store.address.longitude, name: storeAddress })
+      results[storeEntry.storeId + entry.name] ??= []
+      results[storeEntry.storeId + entry.name].push({ imgUrl, entry, store, storeAddress, clickUrl })
+    }
+  }
+
+  for (const storeId in results) {
+    const { imgUrl, entry, store, storeAddress, clickUrl } = results[storeId][0]
+    const prices = new Set()
+    for (const result of results[storeId]) {
+      prices.add(result.entry.price.amount)
+    }
+    html += `
       <div class='card' onclick="openURL('${clickUrl}')" style='width:250px;height: 200px;border-radius:20px;'>
       <div class='image' style='
       position: absolute;
@@ -33,18 +47,16 @@ function showEntriesForItemName(name) {
       <div style='padding:3%'>
         <div class='item'>
           <h3>${entry.name}</h3>
-          <h3>${priceToString(entry.price.amount)}</h3>
+          <h3>${[...prices].map(priceToString).join(' / ')}</h3>
         </div>
         <hr />
         <div class='item'>
-          <h3><a href="https://mcdonalds.com/">${storeAddress}</a></h3>
+          <h3><a href="${clickUrl}">${storeAddress}</a></h3>
           <h4>${store.name}</h4>
         </div>
       </div>
     </div>    
   `
-      locations.push({ lat: store.address.latitude, lng: store.address.longitude, name: storeAddress })
-    }
   }
   document.querySelector('.cards').innerHTML = html
 }
@@ -54,7 +66,7 @@ setTimeout(() => {
 }, 4000)
 
 
-function openURL (url) {
+function openURL(url) {
   window.open(url, '_blank').focus();
 }
 
@@ -62,7 +74,8 @@ function priceToString(price) {
   return '$' + (price / 100)
 }
 
-function showMap () {
+function showMap() {
+  if (!locations.length) return alert('Please search for an item first')
   document.querySelector('.cards').innerHTML = `
     <iframe id="frame" src="map.html?6" style="width:80vw;height:80vh;" />
   `
