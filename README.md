@@ -13,4 +13,4 @@ We scrapped web information products such as sundaes and McFlurries, we then use
 Getting a working mockup with the appropriate information
 
 ## What we learned
-We learned how to web scrape for information and writing scripts that takes that info for our use
+We learned how to web scrape data for information and writing scripts that takes that info and implemented to our app
